@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -36,7 +37,6 @@ def get_next_ckpt_name(ckpt_path="."):
         ckpt_last_file = get_last_ckpt_name(ckpt_path)
         if ckpt_last_file is not None:
             ckpt_last_num = int(ckpt_last_file[-8:-8 + 3])
-            # new_filename = "cp-00{}.ckpt".format(ckpt_last_num + 1)
             new_filename = f"cp-{ckpt_last_num + 1:03d}.ckpt"
         else:
             new_filename = "cp-001.ckpt"
@@ -47,37 +47,33 @@ def get_next_ckpt_name(ckpt_path="."):
     return new_filename
 
 
+def plot_data(data, title, color):
+    plt.plot(data, ".", color=color)
+    plt.title(title)
+    plt.show()
+
+
 def plot_results(losses_policy, losses_value, deltas_policy, d_reward, state_values, log_prob, rewards):
-    plt.plot(losses_policy, ".", color="blue")
-    plt.title("losses_policy")
-    plt.show()
-
-    plt.plot(losses_value, ".", color="brown")
-    plt.title("losses_policy")
-    plt.show()
-
-    plt.plot(deltas_policy, ".", color="orange")
-    plt.title("losses_value")
-    plt.show()
-
-    plt.plot(d_reward, ".", color="black")
-    plt.title("d_reward")
-    plt.show()
-
-    plt.plot(state_values, ".", color="purple")
-    plt.title("state_values")
-    plt.show()
-
-    plt.plot(log_prob, ".", color="pink")
-    plt.title("log_prob")
-    plt.show()
-
-    plt.plot(rewards, ".", color="green")
-    plt.title("rewards")
-    plt.show()
+    plot_data(losses_policy, "losses_policy", "blue")
+    plot_data(losses_value, "losses_value", "brown")
+    plot_data(deltas_policy, "deltas_policy", "orange")
+    plot_data(d_reward, "d_reward", "black")
+    plot_data(state_values, "state_values", "purple")
+    plot_data(log_prob, "log_prob", "pink")
+    plot_data(rewards, "rewards", "green")
 
     trend_reward = [np.average(rewards[index:index+10]) for index in range(0, len(rewards), 10)]
 
-    plt.plot(trend_reward, ".", color="red")
-    plt.title("trend_reward")
-    plt.show()
+    plot_data(trend_reward, "trend_reward", "red")
+
+
+def save_data_in_file(data, filename):
+    with open(filename, "w") as file_out:
+        json.dump(data, file_out)
+
+
+def load_data_from_file(filename):
+    with open(filename, "r") as file_in:
+        result = json.load(file_in)
+
+    return result

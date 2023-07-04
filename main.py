@@ -24,32 +24,17 @@ def loop_train(ckpt_num=1, ckpt_dir=".", n_episodes=10000, num_workers=5, alpha_
         train(agent, data_logger, n_episodes=n_episodes, num_workers=num_workers, alpha_policy=alpha_policy,
               alpha_value=alpha_value)
 
-        new_file = utils.get_next_ckpt_name()
+        new_file = utils.get_next_ckpt_name(ckpt_dir)
         print("\nnew_file: {}".format(new_file))
         agent.save_model_weights(new_file)
 
-        with open("losses_policy.json", "w") as file_out:
-            json.dump([i.numpy().item() for i in data_logger.losses_policy], file_out)
-
-        with open("losses_value.json", "w") as file_out:
-            json.dump([i.numpy().item() for i in data_logger.losses_value], file_out)
-
-        with open("deltas_policy.json", "w") as file_out:
-            json.dump([i.numpy().item() for i in data_logger.deltas_policy], file_out)
-
-        with open("rewards.json", "w") as file_out:
-            json.dump([i.item() for i in data_logger.rewards], file_out)
-
-        with open("d_reward.json", "w") as file_out:
-            json.dump([i.numpy().item() for i in data_logger.d_reward], file_out)
-
-        with open("state_values.json", "w") as file_out:
-            json.dump([i.numpy().item() for i in data_logger.state_values], file_out)
-
-        with open("log_prob.json", "w") as file_out:
-            json.dump([i.numpy().item() for i in data_logger.log_prob], file_out)
-
-    agent.save_model("model_policy.h5")
+        utils.save_data_in_file([i.numpy().item() for i in data_logger.losses_policy], "losses_policy.json")
+        utils.save_data_in_file([i.numpy().item() for i in data_logger.losses_value], "losses_value.json")
+        utils.save_data_in_file([i.numpy().item() for i in data_logger.deltas_policy], "deltas_policy.json")
+        utils.save_data_in_file([i.item() for i in data_logger.rewards], "rewards.json")
+        utils.save_data_in_file([i.numpy().item() for i in data_logger.d_reward], "d_reward.json")
+        utils.save_data_in_file([i.numpy().item() for i in data_logger.state_values], "state_values.json")
+        utils.save_data_in_file([i.numpy().item() for i in data_logger.log_prob], "log_prob.json")
 
     if flag_plot_results:
         utils.plot_results(data_logger.losses_policy, data_logger.losses_value, data_logger.deltas_policy,
@@ -73,4 +58,4 @@ def train(agent, data_logger, n_episodes=10000, num_workers=1, alpha_policy=1.0,
 
 
 if __name__ == "__main__":
-    loop_train(ckpt_num=5, n_episodes=int(20e3), num_workers=5, flag_plot_results=True)
+    loop_train(ckpt_num=3, n_episodes=int(20e3), num_workers=5, flag_plot_results=False)
