@@ -1,14 +1,18 @@
 from threading import Thread
+import random
 
 from game import Game
 
 
-def play_episode(agent, render=None):
+def play_episode(agent, render=None, replay_games=None, replay_games_proba=0.0):
     cumulative_reward = 0
     replay = []
 
     game = Game()
     observation, _ = game.reset()
+    if replay_games is not None and random.random() < replay_games_proba:
+        observation = replay_games.sample_game()
+        game.observation_space = observation
 
     terminated = False
 
@@ -33,10 +37,12 @@ def play_episode(agent, render=None):
 
 
 class PolicyThread:
-    def __init__(self, agent, data_logger, num_episodes):
+    def __init__(self, agent, data_logger, num_episodes, replay_games=None, replay_games_proba=0.0):
         self.__agent__ = agent
         self.__data_logger__ = data_logger
         self.__num_episodes__ = num_episodes
+        self.__replay_games__ = replay_games
+        self.__replay_games_proba__ = replay_games_proba
 
         self.worker = None
 
@@ -49,7 +55,8 @@ class PolicyThread:
 
     def __do_job__(self, alpha_policy=1.0, alpha_value=1.0):
         for count_episode in range(self.__num_episodes__):
-            reward, episode = play_episode(self.__agent__)
+            reward, episode = play_episode(self.__agent__, replay_games=self.__replay_games__,
+                                           replay_games_proba=self.__replay_games_proba__)
 
             loss_policy, loss_value, deltas_policy, d_reward, state_values, log_prob = self.__agent__.train(episode,
                                                                                                             alpha_policy=alpha_policy,
