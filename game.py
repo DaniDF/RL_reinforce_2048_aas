@@ -9,7 +9,7 @@ class Game:
 
         self.action_space = range(4)
 
-        self.game_score = 0
+        self.game_score = np.int32(0)
         self.MAX_TILE = max_tile
 
     def reset(self):
@@ -57,7 +57,7 @@ class Game:
         return reward
 
     def __splash_state__(self):
-        reward = 0
+        reward = np.int32(0)
         old_pre_c = -1
         for r in range(self.board_dim):
             for c in range(1, self.board_dim):
