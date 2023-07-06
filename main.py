@@ -68,6 +68,6 @@ def train(agent, data_logger, n_episodes=10000, num_workers=1, alpha_policy=1.0,
 
 if __name__ == "__main__":
     # loop_train(ckpt_num=3, n_episodes=int(20e3), num_workers=5, flag_plot_results=False, save_states=True, replay_games_file=None)
-    loop_train(ckpt_num=3, n_episodes=int(20), num_workers=5, flag_plot_results=False, save_stats=True,
-               ckpt_dir="ckpt-#0-4_norm_huge-net_replay_games", replay_games_file="play_games_1000_ending_states.json",
-               replay_games_proba=0.33)
+    loop_train(ckpt_num=3, n_episodes=int(20e3), num_workers=5, flag_plot_results=False, save_stats=True,
+               ckpt_dir="ckpt-#1-1_norm_huge-net_replay_games", replay_games_file="play_games_1000_ending_states.json",
+               replay_games_proba=1.0)

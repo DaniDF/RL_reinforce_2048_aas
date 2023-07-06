@@ -4,10 +4,11 @@ import numpy as np
 
 
 class ReplayGames:
-    def __init__(self, replay_filename, clean_cells=3):
-        self.replay_buffer = np.array(utils.load_data_from_file(replay_filename))
+    def __init__(self, replay_filename, clean_cells=5):
+        self.replay_buffer = [(np.array(game), np.int32(score))
+                              for game, score in utils.load_data_from_file(replay_filename)]
 
-        for index, game in enumerate(self.replay_buffer):
+        for index, (game, score) in enumerate(self.replay_buffer):
             shape = game.shape
 
             count_row = 0
@@ -27,7 +28,7 @@ class ReplayGames:
             arg_flat_game.sort(key=lambda x: x[2])
             for cell_index in range(clean_cells):
                 pos = arg_flat_game[cell_index]
-                self.replay_buffer[index][pos[0]][pos[1]] = 0
+                self.replay_buffer[index][0][pos[0]][pos[1]] = 0
 
     def sample_game(self):
         result_index = np.random.randint(len(self.replay_buffer))

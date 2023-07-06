@@ -11,8 +11,9 @@ def play_episode(agent, render=None, replay_games=None, replay_games_proba=0.0):
     game = Game()
     observation, _ = game.reset()
     if replay_games is not None and random.random() < replay_games_proba:
-        observation = replay_games.sample_game()
-        game.observation_space = observation
+        game.observation_space, game.game_score = replay_games.sample_game()
+        observation = game.observation_space
+        cumulative_reward = game.game_score
 
     terminated = False
 

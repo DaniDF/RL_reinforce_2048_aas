@@ -1,6 +1,5 @@
 import os.path
 import time
-import json
 import re
 
 import numpy as np
@@ -10,6 +9,7 @@ import utils
 from game import Game
 from reinforce_base_agent import ReinforceBaseAgent
 from data_logger import DataLogger
+from replay_games import ReplayGames
 
 
 def play_episode(agent):
@@ -60,7 +60,7 @@ def play_games(n_episodes=1000, ckpt_path=".", ckpt_filename=None, save_rewards=
         tiles[max_tile] += 1
 
         if save_ending_states:
-            ending_states.append(game.observation_space.tolist())
+            ending_states.append((game.observation_space.tolist(), game.game_score.item()))
 
     plt.plot(rewards, ".", color="red")
     plt.show()
@@ -76,13 +76,13 @@ def play_games(n_episodes=1000, ckpt_path=".", ckpt_filename=None, save_rewards=
     print("Percentile 95:", np.percentile(rewards, 5))
 
     if save_rewards:
-        utils.save_data_in_file(rewards, os.path.join(ckpt_path, f"play_games_{n_episodes}_rewards.json"))
+        utils.save_data_in_file([i.item() for i in rewards], os.path.join(ckpt_path, f"play_games_{n_episodes}_rewards.json"))
 
     if save_ending_states:
         utils.save_data_in_file(ending_states, os.path.join(ckpt_path, f"play_games_{n_episodes}_ending_states.json"))
 
 
-def play_game_show(ckpt_path=".", ckpt_filename=None):
+def play_game_show(ckpt_path=".", ckpt_filename=None, replay_games_file=None):
     agent = ReinforceBaseAgent(input_shape=(4 * 4,), output_space=range(4))
 
     if ckpt_filename is None:
@@ -97,7 +97,12 @@ def play_game_show(ckpt_path=".", ckpt_filename=None):
     action_translator = ["LEFT", "UP", "RIGHT", "DOWN"]
 
     game = Game()
-    observation, _ = game.reset()
+    if replay_games_file is not None:
+        replay = ReplayGames(os.path.join(ckpt_path, replay_games_file))
+        observation = replay.sample_game()
+        game.observation_space = observation
+    else:
+        observation, _ = game.reset()
 
     terminated = False
 
@@ -168,8 +173,8 @@ def plot_file_json(filename, color="purple"):
 
 
 if __name__ == "__main__":
-    play_games(n_episodes=int(1e3), ckpt_path="ckpt-#0-3_norm_huge-net", ckpt_filename=None, save_rewards=False, save_ending_states=True)
-    # play_game_show(ckpt_path="ckpt-#0-3_norm_huge-net", ckpt_filename="cp-004.ckpt")
-    # load_data_log(data_log_path="ckpt-#0-3_norm_huge-net", flag_plot_results=True)
+    play_games(n_episodes=int(1e3), ckpt_path="ckpt-#0-2_norm_big-net", ckpt_filename="cp-010.ckpt", save_rewards=True, save_ending_states=True)
+    # play_game_show(ckpt_path="ckpt-#1-1_norm_huge-net_replay_games", ckpt_filename=None, replay_games_file=None)
+    # load_data_log(data_log_path="ckpt-#0-2_norm_big-net", flag_plot_results=True)
     # compute_percentiles(n_episodes=int(1e3), ckpt_path="ckpt-#0-2_norm_big-net", flag_plot_results=False, save_percentile=True)
-    # plot_file_json(os.path.join("ckpt-#0-3_norm_huge-net", "compute_percentiles_1000_rewards.json"))
+    # plot_file_json(os.path.join("ckpt-#0-2_norm_big-net", "compute_percentiles_1000_rewards.json"))
