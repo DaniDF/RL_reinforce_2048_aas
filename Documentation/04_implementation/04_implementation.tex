@@ -1,0 +1,8 @@
+In order to achieve the goal of getting the 2048 tile on the board this dissertation propose an agent based on the reinforce algorithm. In particular the reinforce algorithm \cite{reinforce} was implemented using neural networks implemented in TensorFlow. In addition a baseline was implemented using another neural network.
+Based on the game board, both neural networks are filled in input with a sequentialized version of the board matrix: each row follows the previous one.
+Like the neural network’s weights, also the input values are represented using the tf.float32 data type of TensorFlow library.
+The first implementation \label{lab:first_net} of the \textit{policy network} is composed by seven hidden layers fully connected with the following nodes $[512,512,256,256,128, 64,64]$. The network used to predict the value (\textit{value network}) has four hidden layers fully connected $[512,512,256,128]$.
+This implementation was trained for 200000 episodes.
+A second \label{lab:second_net} pair of networks were tested: \textit{policy network} with eight hidden layers fully connected $[2048,2048,1024, 1024, 1024, 1024, 1024, 1024]$ and the \textit{value network} composed by six hidden layers fully connected $[2048,2048,1024, 1024, 1024, 1024]$.
+This implementation was trained for 400000 episodes.
+After the training both implementations are used to play 10000 games\label{lab:replay} and the ending board configurations, with the five less valuable tiles setted to zero, are used as a starting point for fine-tuning the networks. The played ending states were mixed with new games with probability of 33\%.

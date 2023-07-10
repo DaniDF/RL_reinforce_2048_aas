@@ -16,20 +16,23 @@ class ReinforceBaseAgent:
         self.__output_space__ = output_space
 
         self.__model_policy__ = tf.keras.models.Sequential([
-            tf.keras.layers.Dense(512, input_shape=input_shape, activation="relu", dtype=tf.float32),
-            tf.keras.layers.Dense(512, activation="relu"),
-            tf.keras.layers.Dense(256, activation="relu"),
-            tf.keras.layers.Dense(256, activation="relu"),
-            tf.keras.layers.Dense(128, activation="relu"),
-            tf.keras.layers.Dense(64, activation="relu"),
-            tf.keras.layers.Dense(64, activation="relu"),
+            tf.keras.layers.Dense(2048, input_shape=input_shape, activation="relu", dtype=tf.float32),
+            tf.keras.layers.Dense(2048, activation="relu"),
+            tf.keras.layers.Dense(1024, activation="relu"),
+            tf.keras.layers.Dense(1024, activation="relu"),
+            tf.keras.layers.Dense(1024, activation="relu"),
+            tf.keras.layers.Dense(1024, activation="relu"),
+            tf.keras.layers.Dense(1024, activation="relu"),
+            tf.keras.layers.Dense(1024, activation="relu"),
             tf.keras.layers.Dense(len(output_space), activation="softmax")
         ])
         self.__model_value__ = tf.keras.models.Sequential([
-            tf.keras.layers.Dense(512, input_shape=input_shape, activation="relu", dtype=tf.float32),
-            tf.keras.layers.Dense(512, activation="relu"),
-            tf.keras.layers.Dense(256, activation="relu"),
-            tf.keras.layers.Dense(128, activation="relu"),
+            tf.keras.layers.Dense(2048, input_shape=input_shape, activation="relu", dtype=tf.float32),
+            tf.keras.layers.Dense(2048, activation="relu"),
+            tf.keras.layers.Dense(1024, activation="relu"),
+            tf.keras.layers.Dense(1024, activation="relu"),
+            tf.keras.layers.Dense(1024, activation="relu"),
+            tf.keras.layers.Dense(1024, activation="relu"),
             tf.keras.layers.Dense(1, activation="linear")
         ])
 

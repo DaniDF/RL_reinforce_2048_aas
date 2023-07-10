@@ -29,7 +29,7 @@ def play_episode(agent):
     return game
 
 
-def play_games(n_episodes=1000, ckpt_path=".", ckpt_filename=None, save_rewards=False, save_ending_states=False):
+def play_games(n_episodes=1000, ckpt_path=".", ckpt_filename=None, flag_plot_results=True, save_rewards=False, save_ending_states=False):
     agent = ReinforceBaseAgent(input_shape=(4 * 4,), output_space=range(4))
     # agent = DQNAgent(input_shape=(4*4,), output_space=range(4))
 
@@ -69,8 +69,9 @@ def play_games(n_episodes=1000, ckpt_path=".", ckpt_filename=None, save_rewards=
     tiles_keys.sort()
     tiles = {i: tiles[i] for i in tiles_keys}
 
-    plt.bar(list(tiles.keys()), tiles.values(), color="red")
-    plt.show()
+    if flag_plot_results:
+        plt.bar(list(tiles.keys()), tiles.values(), color="red")
+        plt.show()
 
     print("\nBest score:", best_score)
     print("Percentile 95:", np.percentile(rewards, 5))
@@ -172,9 +173,18 @@ def plot_file_json(filename, color="purple"):
     utils.plot_data(data, os.path.basename(filename), color)
 
 
+def filter_ending_states(filename, threshold):
+    data = utils.load_data_from_file(filename)
+
+    data_filtered = [d for d in data if np.array(d[0]).flatten().max() >= threshold]
+
+    utils.save_data_in_file(data_filtered,
+                            os.path.join(os.path.dirname(filename), f"min_{threshold}_{os.path.basename(filename)}"))
+
+
 if __name__ == "__main__":
-    play_games(n_episodes=int(1e3), ckpt_path="ckpt-#0-2_norm_big-net", ckpt_filename="cp-010.ckpt", save_rewards=True, save_ending_states=True)
-    # play_game_show(ckpt_path="ckpt-#1-1_norm_huge-net_replay_games", ckpt_filename=None, replay_games_file=None)
-    # load_data_log(data_log_path="ckpt-#0-2_norm_big-net", flag_plot_results=True)
-    # compute_percentiles(n_episodes=int(1e3), ckpt_path="ckpt-#0-2_norm_big-net", flag_plot_results=False, save_percentile=True)
-    # plot_file_json(os.path.join("ckpt-#0-2_norm_big-net", "compute_percentiles_1000_rewards.json"))
+    play_games(n_episodes=int(10e3), ckpt_path="ckpt-#1-2_norm_huge-net_replay_games", ckpt_filename="cp-027.ckpt", flag_plot_results=False, save_rewards=True, save_ending_states=True)
+    play_game_show(ckpt_path="ckpt-#1-1_norm_huge-net_replay_games", ckpt_filename=None, replay_games_file=None)
+    load_data_log(data_log_path="ckpt-#0-2_norm_big-net", flag_plot_results=True)
+    compute_percentiles(n_episodes=int(1e3), ckpt_path="ckpt-#1-2_norm_huge-net_replay_games", flag_plot_results=True, save_percentile=True)
+    plot_file_json(os.path.join("ckpt-#0-2_norm_big-net", "compute_percentiles_1000_rewards.json"))
