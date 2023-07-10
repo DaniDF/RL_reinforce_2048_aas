@@ -1,4 +1,5 @@
 .idea
 venv
 py2048.iml
-ckpt-#*
+ckpt-#2-0_norm_more_huge-net
+ckpt-#3-0_dqn
